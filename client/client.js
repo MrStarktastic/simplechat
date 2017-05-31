@@ -21,7 +21,7 @@ $(() => {
             socket.emit('new user', username, (success, otherUsers = null) => {
                 if (success) {
                     $userFormArea.hide(250);
-                    $container.load('chat.html', () => initChat(socket, username, otherUsers, $container));
+                    $container.load('client/chat.html', () => initChat(socket, username, otherUsers, $container));
                 } else {
                     alert('Username "' + username + '" already exists!');
                 }
@@ -110,7 +110,7 @@ function initChat(socket, username, otherUsers, $container) {
      * @return string list-group-item of the username.
      */
     function createUserListItem(username) {
-        return '<li class = "list-group-item" >' + username + '</li>';
+        return '<li class = "list-group-item" dir="auto" >' + username + '</li>';
     }
 
     /**

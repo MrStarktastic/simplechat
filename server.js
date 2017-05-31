@@ -13,8 +13,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-// Allow the app to use files in this directory as src in html
-app.use(express.static(__dirname));
+app.use('/client', express.static(__dirname + '/client'));
 
 io.sockets.on('connection', (socket) => {
     console.log('New socket detected');
