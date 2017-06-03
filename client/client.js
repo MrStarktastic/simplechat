@@ -89,12 +89,12 @@ function initChat(socket, user, otherUsers, $container) {
             wasTyping = false;
             $sendBtn.prop('disabled', true);
             $message.val(currMsg = '');
-            socket.emit('stopped typing', user.name);
         }
     });
 
     // Receive message from another user
     socket.on('receive message', (data) => {
+        onStoppedTyping(data.user.name);
         appendMsgToChatArea(data.user, data.msg).prop('id', data.msgId);
     });
 
@@ -122,16 +122,7 @@ function initChat(socket, user, otherUsers, $container) {
         $isTyping.show();
     });
 
-    socket.on('stopped typing', (name) => {
-        usersTyping.delete(name);
-
-        if (usersTyping.size !== 0) {
-            $isTyping.text(genIsTypingText());
-            $isTyping.show();
-        } else {
-            $isTyping.hide();
-        }
-    });
+    socket.on('stopped typing', (name) => onStoppedTyping(name));
 
     // Add new username
     socket.on('add user', (user) => {
@@ -166,6 +157,17 @@ function initChat(socket, user, otherUsers, $container) {
         return $('<div style="display: none;" class = "well"><strong style="color: ' + user.color + '">' +
             user.name + '</strong> -' + ' ' + new Date().toLocaleTimeString() + delBtn + '<br>' + msg + '<div>')
             .appendTo($chat).slideDown();
+    }
+
+    function onStoppedTyping(name) {
+        usersTyping.delete(name);
+
+        if (usersTyping.size !== 0) {
+            $isTyping.text(genIsTypingText());
+            $isTyping.show();
+        } else {
+            $isTyping.hide();
+        }
     }
 
     function genIsTypingText() {
