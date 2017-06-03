@@ -80,7 +80,7 @@ function initChat(socket, user, otherUsers, $container) {
         e.preventDefault();
 
         if (currMsg !== '') {
-            const $msgdiv = appendToChatArea(user, currMsg, delBtn);
+            const $msgdiv = appendMsgToChatArea(user, currMsg, delBtn);
 
             socket.emit('send message', currMsg, (msgId) => {
                 $msgdiv.prop('id', msgId);
@@ -95,7 +95,7 @@ function initChat(socket, user, otherUsers, $container) {
 
     // Receive message from another user
     socket.on('receive message', (data) => {
-        appendToChatArea(data.user, data.msg).prop('id', data.msgId);
+        appendMsgToChatArea(data.user, data.msg).prop('id', data.msgId);
     });
 
     // Other user deleted his message
@@ -162,11 +162,9 @@ function initChat(socket, user, otherUsers, $container) {
      * @param delBtn A delete button (only when the message is from this user).
      * @return div of message.
      */
-    function appendToChatArea(user, msg, delBtn = '') {
-        const dt = new Date($.now());
-        const time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+    function appendMsgToChatArea(user, msg, delBtn = '') {
         return $('<div style="display: none;" class = "well"><strong style="color: ' + user.color + '">' +
-            user.name + '</strong> -' + ' ' + time + delBtn + '<br>' + msg + '<div>')
+            user.name + '</strong> -' + ' ' + new Date().toLocaleTimeString() + delBtn + '<br>' + msg + '<div>')
             .appendTo($chat).slideDown();
     }
 

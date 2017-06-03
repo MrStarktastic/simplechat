@@ -50,7 +50,13 @@ io.sockets.on('connection', (socket) => {
 
     // Notify active users of this user's disconnection
     socket.on('disconnect', () => {
-        const name = socket.user.name;
+        let name;
+
+        try {
+            name = socket.user.name;
+        } catch (err) {
+        }
+
         console.log('%s disconnected', name);
 
         users.delete(name);
