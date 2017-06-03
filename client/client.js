@@ -32,7 +32,7 @@ $(() => {
     });
 });
 
-let usersTyping = new Set();
+const usersTyping = new Set();
 let wasTyping = false;
 
 function initChat(socket, user, otherUsers, $container) {
