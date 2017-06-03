@@ -18,10 +18,12 @@ $(() => {
         e.preventDefault();
 
         if (username !== '') {
-            socket.emit('new user', username, (success, otherUsers = null) => {
+            socket.emit('new user', username, (success, user = null, otherUsers = null) => {
                 if (success) {
                     $userFormArea.hide(250);
-                    $container.load('client/chat.html', () => initChat(socket, username, otherUsers, $container));
+                    $container.load('client/chat.html', () => {
+                        initChat(socket, user, otherUsers, $container);
+                    });
                 } else {
                     alert('Username "' + username + '" already exists!');
                 }
@@ -30,7 +32,7 @@ $(() => {
     });
 });
 
-function initChat(socket, username, otherUsers, $container) {
+function initChat(socket, user, otherUsers, $container) {
     const $chatArea = $container.find($('#chatArea'));
     const $chat = $chatArea.find($('#chat'));
     const $users = $chatArea.find($('#users'));
@@ -47,7 +49,7 @@ function initChat(socket, username, otherUsers, $container) {
         html += createUserListItem(otherUsers[i]);
     }
     $users.html(html);
-    $(createUserListItem(username)).appendTo($users);
+    $(createUserListItem(user)).appendTo($users);
 
     $chatArea.show(250);
 
@@ -60,7 +62,7 @@ function initChat(socket, username, otherUsers, $container) {
         e.preventDefault();
 
         if (currMsg !== '') {
-            const $msgdiv = appendToChatArea(username, currMsg, delBtn);
+            const $msgdiv = appendToChatArea(user, currMsg, delBtn);
 
             socket.emit('send message', currMsg, (msgId) => {
                 $msgdiv.prop('id', msgId);
@@ -95,8 +97,8 @@ function initChat(socket, username, otherUsers, $container) {
     });
 
     // Add new username
-    socket.on('add user', (username) => {
-        $(createUserListItem(username)).hide().appendTo($users).slideDown();
+    socket.on('add user', (user) => {
+        $(createUserListItem(user)).hide().appendTo($users).slideDown();
     });
 
     // Remove username
@@ -106,11 +108,11 @@ function initChat(socket, username, otherUsers, $container) {
 
     /**
      * Creates a list item for the list of active users.
-     * @param username Username string.
+     * @param user Username and his color.
      * @return string list-group-item of the username.
      */
-    function createUserListItem(username) {
-        return '<li class = "list-group-item" dir="auto" >' + username + '</li>';
+    function createUserListItem(user) {
+        return '<li class = "list-group-item" dir="auto" style="color: ' + user.color + '">' + user.name + '</li>';
     }
 
     /**
@@ -123,7 +125,8 @@ function initChat(socket, username, otherUsers, $container) {
     function appendToChatArea(user, msg, delBtn = '') {
         const dt = new Date($.now());
         const time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-        return $('<div style="display: none;" class = "well"><strong>' + user + '</strong> -' +
-            ' ' + time + delBtn + '<br>' + msg + '<div>').appendTo($chat).slideDown();
+        return $('<div style="display: none;" class = "well"><strong style="color: ' + user.color + '">' +
+            user.name + '</strong> -' + ' ' + time + delBtn + '<br>' + msg + '<div>')
+            .appendTo($chat).slideDown();
     }
 }
