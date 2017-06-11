@@ -19,6 +19,7 @@ $(() => {
 
         if (username !== '') {
             socket.emit('new user', username, (success, user = null, otherUsers = null) => {
+                console.log("***********Hello callback**********");
                 if (success) {
                     $userFormArea.hide(250);
                     $container.load('client/chat.html', () => {
